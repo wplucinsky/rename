@@ -12,13 +12,14 @@ const readMapping = (path) => {
     fs.createReadStream(path)
       .pipe(csv())
       .on('data', (data) => {
-        const nvidMatches = data.nvid.match(nvMatch);
+	const nvid = data[Object.keys(data)[0]];
+	const nvidMatches = nvid.match(nvMatch);
         if (!nvidMatches || nvidMatches.length === 0) {
-          console.log(`Unknown mapping ${data.nvid}`);
+          console.log(`Unknown mapping ${nvid}`);
           return;
         }
 
-        mapping[nvidMatches[0]] = data.id
+        mapping[nvidMatches[0].replace('NV ', 'NV-').replace('PZ ', 'PZ-').replace('HV ', 'HV-')] = data.id
       })
       .on('end', () => resolve(mapping));
   })
@@ -53,21 +54,23 @@ const rename = (path, mapping) => {
           console.log(`Missing mapping for name ${nvid}, filename ${filename}. Skipping.`);
           continue;
         }
+	
+	newname = newname.replace(/(\r\n|\n|\r)/gm, '');
 
-        if (filename.indexOf('_moodshot') !== -1) {
+        if (filename.toLowerCase().indexOf('_moodshot') !== -1) {
           newname += '_alt';
         }
-        if (filename.indexOf('_front') !== -1) {
+        if (filename.toLowerCase().indexOf('_front') !== -1) {
           // main image
         }
-        if (filename.indexOf('_back') !== -1) {
+        if (filename.toLowerCase().indexOf('_back') !== -1) {
           newname += '_alt2';
         }
 
 
         newname += type;
 
-        // console.log(`${filename} => ${newname}`);
+        // console.log(`mv ${filename} ${newname}`);
         fs.rename(`${path}/${filename}`, `${path}/rename/${newname}`, (err) => {
           if ( err ) {
             console.error(err);
