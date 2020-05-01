@@ -1,0 +1,15 @@
+{
+  "name": "renames",
+  "version": "1.0.0",
+  "description": "",
+  "main": "rename.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "csv-parser": "^2.3.2",
+    "minimist": "^1.2.5"
+  }
+}
